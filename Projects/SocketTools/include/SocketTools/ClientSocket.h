@@ -1,22 +1,23 @@
 #pragma once
 
-#define WIN32_LEAN_AND_MEAN
-
-#include <windows.h>
-#include <winsock2.h>
-
 #include <cstdint>
 
-#include <SocketTools/Common.h>
+#include <SocketTools/Socket.h>
 
 namespace socket_tools
 {
-	class SOCKET_TOOLS_API ClientSocket
+	class SOCKET_TOOLS_API ClientSocket :
+		public Socket
 	{
 	public:
-		ClientSocket(SOCKET socket);
-		ClientSocket(const char* address, const char* port);
-		~ClientSocket();
+		using Socket::Socket;
+
+		ClientSocket(
+			SocketMode mode,
+			Protocol protocol,
+			AddressFamily family,
+			const char* address,
+			const char* port);
 
 		template<typename T, size_t size>
 		void Send(const T(&data)[size])
@@ -36,10 +37,5 @@ namespace socket_tools
 
 		void Send(const uint8_t* data, size_t size);
 		void Receive(uint8_t* data, size_t size);
-
-		void Shutdown();
-
-	private:
-		SOCKET m_socket;
 	};
 }

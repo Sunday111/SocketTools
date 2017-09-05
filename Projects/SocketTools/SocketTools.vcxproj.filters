@@ -18,12 +18,36 @@
     <ClInclude Include="include\SocketTools\ClientSocket.h">
       <Filter>SocketTools</Filter>
     </ClInclude>
+    <ClInclude Include="include\SocketTools\ServerSocket.h">
+      <Filter>SocketTools</Filter>
+    </ClInclude>
+    <ClInclude Include="include\SocketTools\Socket.h">
+      <Filter>SocketTools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\WSA_Helpers.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Address.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SocketManager.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\ClientSocket.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ServerSocket.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Socket.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WSA_Helpers.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Address.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

@@ -3,72 +3,28 @@
 #include <sstream>
 #include <SocketTools/ClientSocket.h>
 
+#include "WSA_Helpers.h"
+#include "Address.h"
+
 namespace socket_tools
 {
-	namespace
+	ClientSocket::ClientSocket(
+		SocketMode mode,
+		Protocol protocol,
+		AddressFamily family,
+		const char* address,
+		const char* port) :
+		Socket(INVALID_SOCKET)
 	{
-		void ThrowLastError(const char* msg)
-		{
-			std::stringstream msgStream;
-			msgStream << msg << WSAGetLastError();
-			throw std::runtime_error(msgStream.str());
-		}
-
-		struct Address
-		{
-			Address(const char* address, const char* port) :
-				info(nullptr)
-			{
-				ZeroMemory(&hints, sizeof(hints));
-				hints.ai_family = AF_UNSPEC;
-				hints.ai_socktype = SOCK_STREAM;
-				hints.ai_protocol = IPPROTO_TCP;
-
-				// Resolve the server address and port
-				auto result = getaddrinfo(address, port, &hints, &info);
-
-				if (result == 0)
-				{
-					return;
-				}
-
-				std::stringstream msgStream;
-				msgStream << "getaddrinfo failed with error: " << result;
-				throw std::runtime_error(msgStream.str());
-			}
-
-			~Address()
-			{
-				if (info == nullptr)
-				{
-					return;
-				}
-
-				freeaddrinfo(info);
-			}
-
-
-			addrinfo hints;
-			addrinfo* info;
-		};
-	}
-
-	ClientSocket::ClientSocket(SOCKET socket) :
-		m_socket(socket)
-	{}
-
-	ClientSocket::ClientSocket(const char* address, const char* port) :
-		m_socket(INVALID_SOCKET)
-	{
-		Address addr(address, port);
+		Address addr(mode, protocol, family, address, port);
 
 		// Attempt to connect to an address until one succeeds
 		for (auto info = addr.info; info != nullptr; info = info->ai_next)
 		{
 			// Create a SOCKET for connecting to server
-			m_socket = ::socket(info->ai_family, info->ai_socktype, info->ai_protocol);
+			m_socket = socket(info->ai_family, info->ai_socktype, info->ai_protocol);
 
-			if (m_socket == INVALID_SOCKET)
+			if (!SocketIsValid())
 			{
 				ThrowLastError("socket failed with error: ");
 			}
@@ -88,19 +44,10 @@ namespace socket_tools
 		throw std::runtime_error("Unable to connect to server!");
 	}
 
-	ClientSocket::~ClientSocket()
-	{
-		if (m_socket == INVALID_SOCKET)
-		{
-			return;
-		}
-
-		closesocket(m_socket);
-	}
-
 	void ClientSocket::Send(const uint8_t* data, size_t size)
 	{
-		assert(m_socket != INVALID_SOCKET);
+		CheckSocket();
+
 		auto error = send(m_socket, (const char*)data, static_cast<int>(size), 0);
 
 		if (error != SOCKET_ERROR)
@@ -113,7 +60,7 @@ namespace socket_tools
 
 	void ClientSocket::Receive(uint8_t* data, size_t size)
 	{
-		assert(m_socket != INVALID_SOCKET);
+		CheckSocket();
 
 		auto res = recv(m_socket, (char*)data, static_cast<int>(size), 0);
 
@@ -128,16 +75,5 @@ namespace socket_tools
 		}
 
 		ThrowLastError("recv failed with error: ");
-	}
-
-	void ClientSocket::Shutdown()
-	{
-		// shutdown the connection since no more data will be sent
-		auto error = shutdown(m_socket, SD_SEND);
-
-		if (error == SOCKET_ERROR)
-		{
-			ThrowLastError("shutdown failed with error: ");
-		}
 	}
 }

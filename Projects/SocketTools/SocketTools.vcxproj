@@ -144,11 +144,19 @@
   <ItemGroup>
     <ClInclude Include="include\SocketTools\Common.h" />
     <ClInclude Include="include\SocketTools\ClientSocket.h" />
+    <ClInclude Include="include\SocketTools\ServerSocket.h" />
+    <ClInclude Include="include\SocketTools\Socket.h" />
     <ClInclude Include="include\SocketTools\SocketManager.h" />
+    <ClInclude Include="src\Address.h" />
+    <ClInclude Include="src\WSA_Helpers.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Address.cpp" />
     <ClCompile Include="src\ClientSocket.cpp" />
+    <ClCompile Include="src\ServerSocket.cpp" />
+    <ClCompile Include="src\Socket.cpp" />
     <ClCompile Include="src\SocketManager.cpp" />
+    <ClCompile Include="src\WSA_Helpers.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
